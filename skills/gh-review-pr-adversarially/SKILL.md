@@ -1,75 +1,75 @@
 ---
 name: gh-review-pr-adversarially
-description: Perform an adversarial, evidence-backed review of a GitHub pull request using independent reviewer agents and false-positive filtering. Use when asked to stress-test, red-team, deeply review, or find hidden defects in a PR before approval or merge, especially when correctness, regressions, security, concurrency, migrations, or operational risk matter.
+description: 独立したレビュアーエージェントとfalse positiveの除外を用いて、GitHub Pull Requestを敵対的かつ根拠に基づいてレビューする。承認やマージの前にPRをstress test、red team、詳細レビューする、または隠れた不具合を探すよう依頼された場合、特に正確性、regression、security、concurrency、migration、運用リスクが重要な場合に使用する。
 ---
 
-# Review a PR Adversarially
+# Pull Requestを敵対的にレビューする
 
-Seek defects that would justify changing the pull request. Do not optimize for producing many findings.
+Pull Requestを変更する根拠となる不具合を探す。多数の指摘を出すことを目的にしない。
 
-## Establish the review target
+## レビュー対象を確定する
 
-1. Identify the repository, pull request, head commit, and base branch. If the request is ambiguous, infer the PR associated with the current branch when possible; otherwise ask the user.
-2. Read all applicable repository instructions before reviewing. Include nested instruction files for changed paths.
-3. Inspect the PR title, description, linked issue or specification, commit list, complete base-to-head diff, and current CI results. Fetch failed-job logs when they may reveal a product defect rather than an infrastructure failure.
-4. Inspect surrounding code, callers, tests, configuration, schemas, and prior behavior as needed. Do not judge isolated diff fragments without their execution context.
-5. Record the exact head commit reviewed. If it changes during review, refresh the diff and revalidate affected findings.
+1. リポジトリ、Pull Request、head commit、baseブランチを特定する。依頼が曖昧な場合は、可能であれば現在のブランチに紐づくPRを推定し、それ以外ではユーザーに確認する。
+2. レビュー前に、適用されるリポジトリの指示をすべて読む。変更対象path内の入れ子になった指示ファイルも含める。
+3. PRのタイトル、説明、関連issueまたは仕様、コミット一覧、baseからheadまでの完全なdiff、現在のCI結果を確認する。失敗jobのログがインフラ障害ではなく製品上の不具合を示す可能性がある場合は取得する。
+4. 必要に応じて、周辺コード、呼び出し元、テスト、設定、schema、変更前の挙動を確認する。実行時の文脈なしに、切り離されたdiff断片を評価しない。
+5. レビューした正確なhead commitを記録する。レビュー中に変更された場合はdiffを更新し、影響を受ける指摘を再検証する。
 
-Prefer the repository's connected GitHub tooling for PR metadata and use `gh` or local Git where they provide necessary diff, check, or log detail.
+PRメタデータにはリポジトリに接続されたGitHubツールを優先し、diff、check、ログの詳細が必要な場合は`gh`またはローカルGitを使用する。
 
-## Run independent review passes
+## 独立したレビューを実行する
 
-Use independent reviewer agents when the environment supports delegation. Keep each reviewer blind to the other reviewers' conclusions. Give every reviewer the raw PR context, applicable repository instructions, base and head identifiers, and a focused remit; do not give it suspected findings or a desired conclusion.
+環境が委譲に対応している場合は、独立したレビュアーエージェントを使用する。各レビュアーには他のレビュアーの結論を知らせない。それぞれにPRの生の文脈、適用されるリポジトリの指示、baseとheadの識別子、絞り込んだ担当観点を渡し、疑われる問題や望ましい結論は渡さない。
 
-Use the strongest suitable review model and a high reasoning level when selectable. Increase to the highest practical reasoning level for large, security-sensitive, concurrency-heavy, migration-heavy, or otherwise high-risk changes. If resources are limited, prioritize deeper reasoning over reviewer count.
+選択可能な場合は、レビューに適した最も強力なモデルと高いreasoning levelを使用する。大規模、security-sensitive、concurrency-heavy、migration-heavy、またはその他の高リスクな変更には、実用上可能な最高のreasoning levelまで引き上げる。リソースが限られる場合は、レビュアー数より深い推論を優先する。
 
-Assign complementary passes rather than duplicating one generic review:
+同じ一般レビューを重複させず、相互補完する観点を割り当てる。
 
-- behavior and regression analysis against the stated intent;
-- boundary conditions, error paths, state transitions, concurrency, and data integrity;
-- security, trust boundaries, secrets, permissions, and dependency or supply-chain risk when relevant;
-- test quality, missing coverage, compatibility, deployment, migration, rollback, and observability risks.
+- 記載された意図に対する挙動とregressionの分析
+- 境界条件、error path、状態遷移、concurrency、data integrity
+- 必要に応じて、security、trust boundary、secret、権限、依存関係またはsupply chainのリスク
+- テスト品質、不足しているcoverage、compatibility、deployment、migration、rollback、observabilityのリスク
 
-Scale the number of passes to the diff and risk. Do not delegate trivial mechanical changes merely to satisfy a quota. While reviewers work, independently inspect the highest-risk code paths and CI evidence.
+diffとリスクに応じてレビュー回数を調整する。数を満たすだけのために、単純で機械的な変更を委譲しない。レビュアーの作業中に、最もリスクの高いコードpathとCIの証拠を自分でも確認する。
 
-Tell reviewers to return only actionable candidate defects. Each candidate must include:
+レビュアーには、対処可能な不具合候補だけを返すよう指示する。各候補には次を含める。
 
-- severity and a concise title;
-- exact file and tight changed-line range when possible;
-- the triggering inputs or execution path;
-- the concrete consequence;
-- evidence from the repository, diff, tests, logs, or authoritative specification;
-- a concise repair direction, without implementing it.
+- severityと簡潔なタイトル
+- 可能な場合は正確なファイルと狭い変更行範囲
+- 問題を発生させる入力または実行path
+- 具体的な結果
+- リポジトリ、diff、テスト、ログ、または信頼できる仕様に基づく証拠
+- 実装は行わず、簡潔な修正方針
 
-## Verify every candidate
+## すべての候補を検証する
 
-Treat reviewer output as untrusted leads. Reproduce or reason through each candidate against the actual head commit.
+レビュアーの出力を未検証の手掛かりとして扱う。各候補を実際のhead commitに対して再現するか、論理的に検証する。
 
-Reject a candidate when it:
+次に該当する候補は棄却する。
 
-- is not introduced or made materially worse by the PR;
-- contradicts repository instructions or the stated requirements;
-- depends on an unsupported assumption or unreachable path;
-- is only a style preference, speculative hardening, or optional improvement;
-- is already prevented by a caller, invariant, test, type, platform contract, or framework behavior;
-- cites the wrong file, line, revision, or CI result;
-- duplicates a stronger finding.
+- PRによって新たに発生しておらず、重大な悪化もしていない。
+- リポジトリの指示や記載された要件に反する。
+- 根拠のない仮定または到達不能なpathに依存する。
+- 単なるstyleの好み、推測に基づくhardening、任意の改善にすぎない。
+- 呼び出し元、invariant、テスト、型、platform contract、frameworkの挙動によってすでに防止されている。
+- 誤ったファイル、行、revision、CI結果を参照している。
+- より強い指摘と重複している。
 
-Inspect authoritative documentation when correctness depends on an external API or versioned behavior. Clearly label any residual uncertainty; do not upgrade speculation into a finding.
+正確性が外部APIやversion依存の挙動に左右される場合は、信頼できる文書を確認する。残る不確実性を明記し、推測を指摘へ格上げしない。
 
-Use these severities:
+次のseverityを使用する。
 
-- `P0`: immediate catastrophic or broadly exploitable impact; block all use.
-- `P1`: serious correctness, security, data-loss, or availability defect likely to affect normal use; block merge.
-- `P2`: real defect in a narrower path or meaningful regression; normally fix before merge.
-- `P3`: low-impact but concrete defect worth fixing; do not use for style or preferences.
+- `P0`: 即座に壊滅的または広範に悪用可能な影響がある。すべての使用を止める。
+- `P1`: 通常の使用に影響する可能性が高い、重大な正確性、security、data loss、availabilityの不具合。マージを止める。
+- `P2`: より限定的なpathにある実在する不具合、または意味のあるregression。通常はマージ前に修正する。
+- `P3`: 修正する価値がある、影響は小さいが具体的な不具合。styleや好みには使用しない。
 
-## Report the review
+## レビュー結果を報告する
 
-Lead with verified findings ordered by severity, then by likelihood and blast radius. For each finding, state the severity, concise title, file and line, triggering scenario, consequence, and evidence. Keep line ranges tight and point to changed lines whenever possible.
+確認済みの指摘をseverity順、次に発生可能性とblast radius順で最初に示す。各指摘にはseverity、簡潔なタイトル、ファイルと行、発生条件、結果、証拠を記載する。行範囲を狭く保ち、可能な限り変更行を示す。
 
-If there are no verified findings, say so explicitly. Then state the most important areas inspected, the checks or tests considered, and any residual risks or validation gaps. Do not imply that absence of findings proves correctness.
+確認済みの指摘がない場合は、そのことを明示する。そのうえで、確認した最重要領域、考慮したcheckまたはテスト、残るリスクや検証不足を記載する。指摘がないことを正しさの証明であるかのように示さない。
 
-Separate CI failures caused by the change from infrastructure or environment failures. Report stale, pending, skipped, or unavailable checks accurately.
+変更が原因のCI失敗と、インフラまたは環境による失敗を分ける。stale、pending、skipped、unavailableのcheck状態を正確に報告する。
 
-Review is read-only by default. Do not edit files, push commits, submit GitHub reviews or comments, approve, request changes, close, or merge the PR unless the user explicitly asks for that mutation. If the user later requests fixes, preserve the verified findings as the acceptance criteria and follow the repository's normal change workflow.
+レビューは既定でread-onlyとする。ユーザーが変更操作を明示的に依頼しない限り、ファイル編集、commitのpush、GitHub reviewやcommentの送信、approve、request changes、close、mergeを行わない。ユーザーが後から修正を依頼した場合は、確認済みの指摘をacceptance criteriaとして維持し、リポジトリの通常の変更手順に従う。

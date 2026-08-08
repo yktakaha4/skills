@@ -1,4 +1,4 @@
 interface:
-  display_name: "Git Start Clean"
-  short_description: "Safely update and clean a Git worktree"
-  default_prompt: "Use $git-start-clean to preserve local work and prepare this repository's default branch for a new task."
+  display_name: "Gitをcleanな状態から開始"
+  short_description: "ローカル作業を保全してGit worktreeを安全に更新する"
+  default_prompt: "$git-start-clean を使い、ローカル作業を保全しながら、このリポジトリのデフォルトブランチを新しいタスクに向けて準備してください。"

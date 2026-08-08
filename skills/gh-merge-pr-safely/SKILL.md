@@ -1,60 +1,60 @@
 ---
 name: gh-merge-pr-safely
-description: Safely bring a pull request up to date with its base branch, diagnose and repair pre-merge CI failures, verify every required gate, merge the exact reviewed head, and monitor post-merge CI. Use when asked to merge a GitHub pull request carefully, merge only after CI passes, troubleshoot failures around a merge, or prepare a fix or revert PR after a bad merge.
+description: Pull Requestをbaseブランチの最新状態へ安全に追従させ、マージ前のCI失敗を診断・修正し、必須ゲートをすべて確認したうえで、レビュー済みの正確なheadをマージし、マージ後のCIを監視する。GitHubのPull Requestを慎重にマージする、CI成功後だけマージする、マージ前後の失敗を調査する、不適切なマージ後に修正PRまたはrevert PRを準備するよう依頼された場合に使用する。
 ---
 
-# Merge PR Safely
+# Pull Requestを安全にマージする
 
-Treat merging as a gated change followed by production-style verification. Never trade safety for speed.
+マージを、ゲートを通過させる変更と、その後の本番運用相当の検証として扱う。速さのために安全性を犠牲にしない。
 
-## Establish the target
+## 対象を確定する
 
-1. Read repository instructions and determine the repository, PR, head branch, base branch, current head SHA, draft state, review decision, merge state, and permitted merge methods.
-2. Confirm that the selected PR is the one the user intends to merge. Stop and ask when multiple PRs or targets are plausible.
-3. Inspect the full PR diff and recent commits before changing or merging anything.
-4. Check the working tree. Preserve unrelated local work and stop if it prevents safe branch operations.
-5. Record the current PR head SHA and use it as the identity of the revision being verified.
+1. リポジトリの指示を読み、リポジトリ、PR、headブランチ、baseブランチ、現在のhead SHA、draft状態、レビュー判定、マージ状態、許可されているマージ方式を確認する。
+2. 選択したPRがユーザーの意図する対象であることを確認する。複数のPRや対象が考えられる場合は停止して確認する。
+3. 変更やマージの前に、PR全体のdiffと直近のコミットを確認する。
+4. worktreeを確認する。無関係なローカル作業を保全し、安全なブランチ操作を妨げる場合は停止する。
+5. 現在のPRのhead SHAを記録し、検証対象リビジョンの識別子として使用する。
 
-## Update from the base branch
+## baseブランチへ追従する
 
-1. Fetch the latest remote state.
-2. Determine whether repository policy requires merging, rebasing, or a merge queue.
-3. Bring the head branch up to date with the latest base branch when necessary.
-4. Ask before rebasing published commits or force-pushing unless the user has explicitly authorized that history rewrite. Use `--force-with-lease`, never plain `--force`.
-5. Resolve conflicts by preserving the intent of both sides. Run focused tests for every conflicted area.
-6. Push the updated head, then refresh the PR head SHA. Discard all earlier check results associated with an older SHA.
+1. リモートの最新状態をfetchする。
+2. リポジトリの方針がmerge、rebase、またはmerge queueのどれを求めているか確認する。
+3. 必要に応じて、headブランチを最新のbaseブランチへ追従させる。
+4. ユーザーが履歴の書き換えを明示的に許可していない限り、公開済みコミットのrebaseやforce-pushの前に確認する。通常の`--force`は使わず、`--force-with-lease`を使用する。
+5. 両方の変更意図を保ちながら競合を解消する。競合した領域ごとに対象を絞ったテストを実行する。
+6. 更新したheadをpushし、PRのhead SHAを再取得する。古いSHAに紐づくそれまでのcheck結果はすべて破棄する。
 
-## Satisfy pre-merge gates
+## マージ前ゲートを満たす
 
-1. Confirm the PR is not a draft, has no unresolved merge conflicts, satisfies required reviews, and is mergeable under branch protection.
-2. Wait for every required and relevant CI check on the current head SHA to finish. Queued or in-progress checks are not passing checks.
-3. If a check fails, inspect the actual failure log and reproduce it locally when practical.
-4. Fix failures caused by the implementation with the smallest justified change. Test it, commit it intentionally, push it, and wait for the new head SHA's full check set.
-5. Distinguish implementation failures from flaky services, credentials, runner capacity, permissions, and other environment failures. Retry only when evidence supports a transient failure.
-6. Report environment-dependent or ambiguous failures and ask the user for direction instead of weakening tests or bypassing protections.
-7. Never use administrator bypass merely to make a blocked merge succeed.
+1. PRがdraftでなく、未解決のマージ競合がなく、必須レビューを満たし、branch protectionの下でマージ可能であることを確認する。
+2. 現在のhead SHAに対する必須かつ関連するCI checkがすべて完了するまで待つ。queuedまたはin progressのcheckを成功扱いしない。
+3. checkが失敗した場合は実際の失敗ログを確認し、可能であればローカルで再現する。
+4. 実装が原因の失敗は、根拠のある最小の変更で修正する。テストし、意図が明確なコミットを作成し、pushして、新しいhead SHAに対する一連のcheckがすべて完了するまで待つ。
+5. 実装の失敗と、flakyなサービス、認証情報、runner容量、権限、その他の環境要因による失敗を区別する。一時的な失敗だと判断できる根拠がある場合だけ再実行する。
+6. 環境依存または原因が曖昧な失敗は報告し、テストを弱めたり保護を回避したりせず、ユーザーに方針を確認する。
+7. ブロックされたマージを通すだけの目的でadministrator bypassを使用しない。
 
-## Merge the verified revision
+## 検証済みリビジョンをマージする
 
-1. Refresh PR metadata immediately before merging.
-2. Stop if the head SHA changed after verification, and repeat all affected gates.
-3. Select the repository-approved merge method. Ask when more than one method is allowed and the intended history is unclear.
-4. Merge with head-SHA matching, such as `gh pr merge --match-head-commit <verified-sha>`, so an unreviewed update cannot race the merge.
-5. Verify from GitHub that the PR state is `MERGED` and capture the merge commit SHA. Do not infer success from the command exit code alone.
+1. マージ直前にPRのメタデータを再取得する。
+2. 検証後にhead SHAが変わっていた場合は停止し、影響するすべてのゲートを再確認する。
+3. リポジトリで許可されているマージ方式を選ぶ。複数の方式が許可され、意図する履歴が不明な場合は確認する。
+4. `gh pr merge --match-head-commit <verified-sha>`のようにhead SHAを照合してマージし、未レビューの更新が競合して先にマージされることを防ぐ。
+5. GitHub上でPRの状態が`MERGED`であることを確認し、merge commit SHAを記録する。コマンドの終了コードだけから成功を推測しない。
 
-## Monitor after merge
+## マージ後を監視する
 
-1. Identify workflows triggered on the base branch by the merge commit and wait for every relevant run to finish.
-2. If all relevant runs pass, report the PR, merge commit, merge method, and completed checks.
-3. If a run fails, inspect its logs and determine whether the merge introduced the failure.
-4. For a repairable implementation failure, create a new branch from the latest base, implement and validate the narrow fix, and open a fix PR.
-5. When rapid restoration is safer than a forward fix, prepare a revert PR that clearly identifies the reverted merge and impact.
-6. Never merge a fix PR or revert PR automatically. Present its URL, evidence, risk, and CI state to the user for a separate decision.
-7. For environment-dependent, operational, or uncertain failures, preserve evidence, explain the likely boundary, and ask the user how to proceed.
+1. merge commitによってbaseブランチ上で開始されたworkflowを特定し、関連するrunがすべて完了するまで待つ。
+2. 関連するrunがすべて成功した場合は、PR、merge commit、マージ方式、完了したcheckを報告する。
+3. runが失敗した場合はログを確認し、その失敗がマージによって発生したかを判断する。
+4. 修正可能な実装上の失敗には、最新のbaseから新しいブランチを作成し、範囲を絞った修正を実装・検証して、修正PRを作成する。
+5. 前進修正より早期復旧の方が安全な場合は、取り消すmergeと影響を明記したrevert PRを準備する。
+6. 修正PRやrevert PRを自動的にマージしない。URL、根拠、リスク、CI状態を提示し、別の判断としてユーザーに委ねる。
+7. 環境依存、運用上、または不確実な失敗については、証拠を保全し、推定される責任境界を説明して、進め方をユーザーに確認する。
 
-## Report precisely
+## 正確に報告する
 
-- Separate verified facts, diagnostic inference, and untested assumptions.
-- Link the PR and relevant CI runs.
-- State whether the PR merged, whether post-merge CI completed, and whether follow-up remains.
-- Never call CI successful until the final relevant runs have completed.
+- 確認済みの事実、診断上の推論、未検証の仮定を分ける。
+- PRと関連するCI runへのリンクを示す。
+- PRがマージされたか、マージ後CIが完了したか、後続対応が残っているかを明記する。
+- 最後の関連runが完了するまで、CIが成功したと報告しない。
