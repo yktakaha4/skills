@@ -1,11 +1,11 @@
-# Repository guidelines
+# リポジトリのガイドライン
 
-- Store publishable Agent Skills under `skills/<skill-name>/`.
-- Prefix every machine-readable skill identifier with `capy-`; this applies to the directory name and the `name` in `SKILL.md`.
-- Keep the directory name identical to the `name` in `SKILL.md`.
-- Use only lowercase letters, digits, and hyphens in skill names.
-- Set `agents/openai.yaml` `display_name` to a concise Japanese UI name without the `capy` prefix.
-- Keep YAML frontmatter limited to `name`, `description`, and `license`.
-- Add resource directories only when the skill needs them.
-- Run `gh skill publish --dry-run` after changing a skill.
-- Run scripts included in a skill when their behavior changes.
+- 公開可能なAgent Skillsは`skills/<skill-name>/`に配置する。
+- 機械可読なスキル識別子には`capy-`を付ける。これはディレクトリ名と`SKILL.md`の`name`に適用する。
+- ディレクトリ名は`SKILL.md`の`name`と一致させる。
+- スキル名には英小文字、数字、ハイフンだけを使用する。
+- `agents/openai.yaml`の`display_name`には、`capy`を含まない簡潔な日本語のUI名を設定する。
+- YAMLフロントマターは`name`、`description`、`license`だけにする。
+- リソース用ディレクトリはスキルで必要な場合だけ追加する。
+- スキルを変更したら`gh skill publish --dry-run`を実行する。
+- スキルに含まれるスクリプトの挙動を変更したら、そのスクリプトを実行する。
