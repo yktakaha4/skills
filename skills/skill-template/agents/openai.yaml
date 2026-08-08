@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Template"
+  short_description: "Create publishable repository-managed Agent Skills"
+  default_prompt: "Use $skill-template to add a new Agent Skill to this repository."

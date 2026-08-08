@@ -1,0 +1,27 @@
+name: Validate agent skills
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  GH_CLI_VERSION: 2.97.0
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GitHub CLI
+        run: |
+          curl --fail --silent --show-error --location \
+            --output /tmp/gh.deb \
+            "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.deb"
+          sudo dpkg --install /tmp/gh.deb
+      - name: Validate skills
+        run: gh skill publish --dry-run
