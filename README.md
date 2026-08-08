@@ -45,6 +45,22 @@ gh skill publish --dry-run
 gh skill install . git-start-clean --from-local --agent codex --scope project
 ```
 
+## 全Skillをユーザースコープへ同期する
+
+現在のチェックアウトにある全Skillを、検出したコーディングエージェントのユーザースコープへインストールまたは更新します。
+
+```sh
+make sync
+```
+
+`codex`、`claude`、`copilot`、`cursor`、`gemini`、`opencode`の各コマンドを`PATH`から検出します。検出結果を変更する場合は、`gh skill`のエージェント名を指定します。
+
+```sh
+make sync AGENTS="codex claude-code github-copilot"
+```
+
+同期先に同名のSkillがある場合は、現在のチェックアウトの内容で上書きします。
+
 ## GitHubからインストールする
 
 ```sh
