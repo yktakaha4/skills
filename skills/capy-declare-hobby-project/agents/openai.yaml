@@ -1,0 +1,6 @@
+interface:
+  display_name: "ホビープログラミング"
+  short_description: "現在の必要性に合わせて単純で直接的な個人開発を優先する"
+  default_prompt: "$capy-declare-hobby-project を使い、このプロジェクトをホビープログラミングとして扱ってください。"
+policy:
+  allow_implicit_invocation: false

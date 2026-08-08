@@ -1,0 +1,6 @@
+interface:
+  display_name: "仕事のプログラミング"
+  short_description: "業務要件と運用リスクを確認して安全で段階的な変更を優先する"
+  default_prompt: "$capy-declare-professional-project を使い、このプロジェクトを仕事のプログラミングとして扱ってください。"
+policy:
+  allow_implicit_invocation: false
