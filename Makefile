@@ -1,4 +1,5 @@
 AGENTS ?= $(shell ./scripts/detect-agents.sh)
+SKILL_PREFIX := capy-
 
 .PHONY: sync
 
@@ -9,5 +10,6 @@ sync:
 	fi
 	@set -e; for agent in $(AGENTS); do \
 		echo "Syncing skills for $$agent"; \
+		./scripts/remove-prefixed-skills.sh "$$agent" "$(SKILL_PREFIX)"; \
 		gh skill install . --from-local --all --agent "$$agent" --scope user --force; \
 	done

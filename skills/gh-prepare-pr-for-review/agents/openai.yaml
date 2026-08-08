@@ -1,4 +1,0 @@
-interface:
-  display_name: "PRをレビュー向けに整理"
-  short_description: "ブランチをレビューしやすいコミットへ整理する"
-  default_prompt: "$gh-prepare-pr-for-review を使い、このブランチを一貫性がありレビュー可能な状態に整えてください。"

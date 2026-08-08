@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gitをcleanな状態から開始"
+  short_description: "ローカル作業を保全してGit worktreeを安全に更新する"
+  default_prompt: "$capy-git-start-clean を使い、ローカル作業を保全しながら、このリポジトリのデフォルトブランチを新しいタスクに向けて準備してください。"

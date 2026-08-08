@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRを安全にマージ"
+  short_description: "Pull Requestを慎重に検証、マージ、監視する"
+  default_prompt: "$capy-gh-merge-pr-safely を使い、現在のPull Requestを完全に検証してからマージしてください。"

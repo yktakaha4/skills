@@ -19,15 +19,15 @@ skills/
 
 | Skill | 用途 |
 | --- | --- |
-| `git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
-| `gh-review-pr-adversarially` | 独立した複数の観点からPRを敵対的に検証し、確認できた問題だけを報告する |
-| `gh-prepare-pr-for-review` | ブランチ全体を整理し、明示承認を得てレビューしやすいコミット履歴へ再構成する |
-| `gh-merge-pr-safely` | base追従、CI確認、マージ、マージ後CIの監視と復旧判断を慎重に行う |
+| `capy-git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
+| `capy-gh-review-pr-adversarially` | 独立した複数の観点からPRを敵対的に検証し、確認できた問題だけを報告する |
+| `capy-gh-prepare-pr-for-review` | ブランチ全体を整理し、明示承認を得てレビューしやすいコミット履歴へ再構成する |
+| `capy-gh-merge-pr-safely` | base追従、CI確認、マージ、マージ後CIの監視と復旧判断を慎重に行う |
 
 ## Skillを追加する
 
 1. `skills/<skill-name>/SKILL.md` を作成する。
-2. ディレクトリ名と `SKILL.md` の `name` を同じkebab-case名にする。
+2. Skill名を `capy-` で始まるkebab-case名にし、ディレクトリ名と `SKILL.md` の `name` を一致させる。
 3. `description` に機能と発動条件を書く。
 4. 本文に対象Skill固有の手順を書く。
 5. 必要な場合だけ `agents/openai.yaml`、`scripts/`、`references/`、`assets/` を追加する。
@@ -42,7 +42,7 @@ gh skill publish --dry-run
 リポジトリをGitHubへpushする前でも、ローカルディレクトリからインストールできます。
 
 ```sh
-gh skill install . git-start-clean --from-local --agent codex --scope project
+gh skill install . capy-git-start-clean --from-local --agent codex --scope project
 ```
 
 ## 全Skillをユーザースコープへ同期する
@@ -59,12 +59,12 @@ make sync
 make sync AGENTS="codex claude-code github-copilot"
 ```
 
-同期先に同名のSkillがある場合は、現在のチェックアウトの内容で上書きします。
+各コーディングエージェントのユーザースコープSkillディレクトリ直下にある `capy-` で始まるディレクトリを削除してから、現在のチェックアウトにある全Skillをインストールします。
 
 ## GitHubからインストールする
 
 ```sh
-gh skill install yktakaha4/skills git-start-clean --agent codex --scope user
+gh skill install yktakaha4/skills capy-git-start-clean --agent codex --scope user
 ```
 
 全Skillをインストールする場合:

@@ -1,5 +1,5 @@
 ---
-name: gh-merge-pr-safely
+name: capy-gh-merge-pr-safely
 description: Pull Requestをbaseブランチの最新状態へ安全に追従させ、マージ前のCI失敗を診断・修正し、必須ゲートをすべて確認したうえで、レビュー済みの正確なheadをマージし、ローカルを更新済みのデフォルトブランチへ戻してから、マージ後のCIを監視する。GitHubのPull Requestを慎重にマージする、CI成功後だけマージする、マージ前後の失敗を調査する、不適切なマージ後に修正PRまたはrevert PRを準備するよう依頼された場合に使用する。
 license: CC0-1.0
 ---

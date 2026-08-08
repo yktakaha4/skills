@@ -1,5 +1,5 @@
 ---
-name: gh-review-pr-adversarially
+name: capy-gh-review-pr-adversarially
 description: 独立したレビュアーエージェントとfalse positiveの除外を用いて、GitHub Pull Requestを敵対的かつ根拠に基づいてレビューする。承認やマージの前にPRをstress test、red team、詳細レビューする、または隠れた不具合を探すよう依頼された場合、特に正確性、regression、security、concurrency、migration、運用リスクが重要な場合に使用する。
 license: CC0-1.0
 ---
