@@ -15,15 +15,22 @@ skills/
     └── assets/       # 必要な場合のみ
 ```
 
-`skills/skill-template` は、新しいSkillを追加するときの見本です。
+## Skills
+
+| Skill | 用途 |
+| --- | --- |
+| `git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
+| `gh-review-pr-adversarially` | 独立した複数の観点からPRを敵対的に検証し、確認できた問題だけを報告する |
+| `gh-prepare-pr-for-review` | ブランチ全体を整理し、明示承認を得てレビューしやすいコミット履歴へ再構成する |
+| `gh-merge-pr-safely` | base追従、CI確認、マージ、マージ後CIの監視と復旧判断を慎重に行う |
 
 ## Skillを追加する
 
-1. `skills/skill-template` を `skills/<skill-name>` にコピーする。
+1. `skills/<skill-name>/SKILL.md` を作成する。
 2. ディレクトリ名と `SKILL.md` の `name` を同じkebab-case名にする。
 3. `description` に機能と発動条件を書く。
-4. 本文を対象Skill固有の手順に置き換える。
-5. 必要な場合だけ `scripts/`、`references/`、`assets/` を追加する。
+4. 本文に対象Skill固有の手順を書く。
+5. 必要な場合だけ `agents/openai.yaml`、`scripts/`、`references/`、`assets/` を追加する。
 6. 検証する。
 
 ```sh
@@ -35,13 +42,13 @@ gh skill publish --dry-run
 リポジトリをGitHubへpushする前でも、ローカルディレクトリからインストールできます。
 
 ```sh
-gh skill install . skill-template --from-local --agent codex --scope project
+gh skill install . git-start-clean --from-local --agent codex --scope project
 ```
 
 ## GitHubからインストールする
 
 ```sh
-gh skill install yktakaha4/skills skill-template --agent codex --scope user
+gh skill install yktakaha4/skills git-start-clean --agent codex --scope user
 ```
 
 全Skillをインストールする場合:
@@ -50,15 +57,15 @@ gh skill install yktakaha4/skills skill-template --agent codex --scope user
 gh skill install yktakaha4/skills --all --agent codex --scope user
 ```
 
-バージョンを固定する場合:
+インストール済みのSkillをデフォルトブランチの最新版へ更新する場合:
 
 ```sh
-gh skill install yktakaha4/skills skill-template@v1.0.0 --agent codex --scope user
+gh skill update --all
 ```
 
-## 公開する
+## Releaseを使う場合
 
-検証後、セマンティックバージョンのタグでGitHub Releaseを作成します。
+Releaseは必須ではありません。Releaseがなければ、`gh skill install` はデフォルトブランチのHEADを使用します。バージョンを固定して配布したい場合だけ、検証後にセマンティックバージョンのタグでReleaseを作成します。
 
 ```sh
 gh skill publish --tag v1.0.0

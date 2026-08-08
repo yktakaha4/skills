@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare PR for Review"
+  short_description: "Refine a branch into reviewer-friendly commits"
+  default_prompt: "Use $gh-prepare-pr-for-review to make this branch coherent and ready for review."

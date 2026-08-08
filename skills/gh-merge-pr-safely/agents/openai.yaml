@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge PR Safely"
+  short_description: "Verify, merge, and monitor a pull request carefully"
+  default_prompt: "Use $gh-merge-pr-safely to merge the current pull request with full verification."
