@@ -1,0 +1,4 @@
+interface:
+  display_name: "自転車置き場の議論を避ける"
+  short_description: "既存規約と標準に沿って主観的で不要な実装議論を避ける"
+  default_prompt: "$capy-avoid-bikeshedding を使い、利用者への影響を変えずに実装を既存規約へ揃えてください。"
