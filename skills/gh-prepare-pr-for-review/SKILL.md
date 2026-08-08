@@ -1,90 +1,91 @@
 ---
 name: gh-prepare-pr-for-review
-description: Refine a GitHub pull request branch before requesting review by examining its complete commit series and net diff, removing redundant or stale implementation, tests, comments, and documentation, validating the resulting behavior, and organizing the work into reviewer-friendly commits. Use when a PR or feature branch has accumulated iterative fixes or excess context and needs a final coherence pass, including an explicitly approved destructive history rewrite.
+description: GitHub Pull Requestのブランチについて、全コミット系列と最終的なdiffを確認し、重複または古くなった実装、テスト、コメント、文書を除去し、最終的な挙動を検証して、レビューしやすいコミットに整理する。PRやfeatureブランチに反復的な修正や過剰な文脈が蓄積し、最終的な一貫性の確認が必要な場合に使用する。明示的に承認された破壊的な履歴書き換えも対象とする。
+license: CC0-1.0
 ---
 
-# Prepare a PR for Review
+# Pull Requestをレビューに向けて準備する
 
-Turn the current branch into a coherent, reviewable change without altering its intended behavior.
+意図した挙動を変えず、現在のブランチを一貫性がありレビュー可能な変更に整える。
 
-## Establish the review boundary
+## レビュー範囲を確定する
 
-1. Read the repository instructions, especially `AGENTS.md`, contribution guidance, and rules for generated files, tests, commits, and protected branches.
-2. Inspect the current branch, worktree, remotes, upstream, and PR metadata. Determine the base branch from the PR when one exists; otherwise use the repository's configured default branch.
-3. Fetch the relevant remote refs before evaluating the branch. Do not merge, rebase, reset, amend, or force-push during this inspection.
-4. Record the current branch tip, remote branch tip, merge base, and worktree state. Never rewrite the default branch or another protected branch.
-5. If unrelated local changes make the branch boundary ambiguous, stop and ask how to handle them. Do not hide them in the rewrite.
+1. リポジトリの指示を読み、特に`AGENTS.md`、contribution guide、生成ファイル、テスト、コミット、protected branchに関する規則を確認する。
+2. 現在のブランチ、worktree、remote、upstream、PRメタデータを確認する。PRが存在する場合はそのbaseブランチを使用し、それ以外ではリポジトリに設定されたデフォルトブランチを使用する。
+3. ブランチを評価する前に、関連するremote refをfetchする。この確認中はmerge、rebase、reset、amend、force-pushを行わない。
+4. 現在のブランチtip、リモートブランチtip、merge base、worktreeの状態を記録する。デフォルトブランチや他のprotected branchの履歴を書き換えない。
+5. 無関係なローカル変更によってブランチの範囲が曖昧になる場合は停止し、扱いをユーザーに確認する。その変更を履歴書き換えに紛れ込ませない。
 
-## Review the whole branch
+## ブランチ全体をレビューする
 
-Review both the commit sequence and the final tree relative to the merge base. Do not infer the final intent from the latest commit alone.
+コミット系列と、merge baseに対する最終的なtreeの両方をレビューする。最新コミットだけから最終的な意図を推測しない。
 
-- Read every branch commit in chronological order, including its message and patch.
-- Inspect the aggregate diff, changed-file list, and diff statistics against the base.
-- Trace each behavioral change through implementation, automated tests, comments, documentation, configuration, migrations, and generated artifacts.
-- Compare repeated edits to distinguish required final behavior from abandoned approaches and repair-only residue.
-- Run targeted searches for old names, obsolete branches, debug code, temporary compatibility layers, copied logs, secrets, local paths, implementation diary comments, and claims that no longer match the code.
-- Preserve repository conventions, public contracts, necessary compatibility, and rationale that a future maintainer genuinely needs.
+- 各ブランチコミットを時系列順に読み、messageとpatchを確認する。
+- baseに対する全体diff、変更ファイル一覧、diff統計を確認する。
+- 各挙動変更について、実装、自動テスト、コメント、文書、設定、migration、生成物まで追跡する。
+- 繰り返された編集を比較し、必要な最終挙動と、放棄された手法や修正だけの残骸を区別する。
+- 古い名前、廃止済みbranch、debug code、一時的なcompatibility layer、貼り付けられたlog、secret、ローカルpath、実装経緯を記録したコメント、コードと一致しなくなった記述を対象に検索する。
+- リポジトリの慣習、public contract、必要なcompatibility、将来の保守担当者が本当に必要とする根拠を保つ。
 
-Build a concise inventory before editing: intended outcomes, affected contracts, redundant material, stale facts, validation needs, and proposed commit boundaries. Clearly label uncertainty instead of deleting code whose purpose is not established.
+編集前に、意図した結果、影響するcontract、重複した内容、古い事実、必要な検証、提案するコミット境界を簡潔に整理する。目的が確定していないコードを削除せず、不確実性を明記する。
 
-## Make the final tree coherent
+## 最終的なtreeに一貫性を持たせる
 
-Apply the smallest edits needed to make the aggregate change read as one deliberate implementation.
+全体の変更が一つの意図的な実装として読めるよう、必要最小限の編集を行う。
 
-- Collapse redundant paths and remove superseded scaffolding, debugging artifacts, and accidental context leakage.
-- Align tests with externally observable behavior. Remove tests for abandoned intermediate implementations, but retain meaningful regression and edge-case coverage.
-- Update comments and documentation to describe the resulting system rather than the sequence of attempts that produced it.
-- Correct stale examples, names, flags, expected outputs, and migration instructions across all affected surfaces.
-- Avoid unrelated cleanup, broad stylistic churn, or concealing unresolved product decisions.
+- 重複したpathを統合し、置き換え済みのscaffolding、debug artifact、意図せず漏れた文脈を削除する。
+- 外部から観測可能な挙動にテストを合わせる。放棄された中間実装を対象とするテストは削除するが、意味のあるregressionとedge caseのcoverageは維持する。
+- コメントと文書を、試行の順序ではなく最終的なsystemを説明する内容へ更新する。
+- 影響するすべての箇所で、古くなった例、名前、flag、期待出力、migration手順を修正する。
+- 無関係なcleanup、広範なstyle変更、未解決のproduct decisionの隠蔽を避ける。
 
-Review the aggregate diff again after editing. Confirm that every changed line supports the stated outcome and that necessary explanatory context remains.
+編集後に全体diffをもう一度レビューする。すべての変更行が記載された結果に寄与し、必要な説明文脈が残っていることを確認する。
 
-## Validate behavior
+## 挙動を検証する
 
-Run repository-required checks plus focused tests for the changed behavior. Add broader checks when shared contracts or high-risk paths changed. Also check formatting, generated-file consistency, and whitespace errors where applicable.
+リポジトリで必須のcheckと、変更した挙動を対象とするテストを実行する。共有contractまたは高リスクなpathを変更した場合は、より広範なcheckを追加する。必要に応じてformat、生成ファイルの一貫性、whitespace errorも確認する。
 
-Treat passing tests as evidence, not proof. Inspect failures and fix regressions caused by this branch; report unrelated or environment-dependent failures separately. Do not rewrite history until the final tree and validation results are understood.
+テスト成功を証拠として扱い、証明とはみなさない。失敗を確認し、このブランチによるregressionは修正する。無関係または環境依存の失敗は分けて報告する。最終的なtreeと検証結果を把握するまで履歴を書き換えない。
 
-## Plan reviewer-friendly commits
+## レビューしやすいコミットを計画する
 
-Design commits around logical, independently understandable changes rather than the chronology of experimentation.
+試行錯誤の時系列ではなく、論理的で個別に理解できる変更を単位としてコミットを設計する。
 
-- Keep each commit internally consistent: implementation, directly related tests, and required documentation should agree at that point.
-- Order prerequisites before consumers and migrations before dependent behavior.
-- Fold fixup and correction commits into the change they repair.
-- Separate genuinely independent concerns when doing so improves review or rollback.
-- Write commit messages that state the durable purpose, not the editing process.
-- Avoid commits that knowingly break build or tests unless repository policy explicitly requires a staged transition.
+- 各コミット内で一貫性を保つ。その時点で、実装、直接関連するテスト、必要な文書が一致していなければならない。
+- 前提を利用側より先に、migrationをそれに依存する挙動より先に配置する。
+- fixupや修正コミットを、その修正対象の変更へまとめる。
+- 本当に独立した関心事は、レビューやrollbackが容易になる場合に分離する。
+- 編集作業ではなく、継続的な目的を表すcommit messageを書く。
+- リポジトリの方針が段階的な移行を明示的に求めない限り、buildやテストが壊れると分かっているコミットを作らない。
 
-Present the proposed commit list, mapping from current commits to the new structure, planned history operation, validation evidence, and remote-update impact. State exactly which published branch would be rewritten.
+提案するコミット一覧、現在のコミットから新しい構成への対応、予定する履歴操作、検証の証拠、リモート更新への影響を提示する。書き換える公開済みブランチを正確に明記する。
 
-## Require approval before rewriting history
+## 履歴書き換えの前に承認を得る
 
-Treat dropping, squashing, reordering, splitting, rebasing, resetting, amending, or recreating existing commits as destructive. Obtain explicit user approval for the concrete rewrite plan before performing any of them. Approval to clean up the final tree is not approval to rewrite commits or force-push.
+既存コミットのdrop、squash、reorder、split、rebase、reset、amend、recreateを破壊的操作として扱う。実行前に、具体的な書き換え計画についてユーザーの明示的な承認を得る。最終的なtreeのcleanupに対する承認を、コミットの書き換えやforce-pushの承認とみなさない。
 
-After approval:
+承認後は次を行う。
 
-1. Recheck that the branch tips and worktree still match the recorded state. If they changed, invalidate the approval and show a revised plan.
-2. Create a clearly named safety ref at the original local tip, such as `codex/backup-<branch>-<timestamp>`, and report its exact name and commit.
-3. Preserve unrelated work according to repository policy. Do not use destructive cleanup to manufacture a clean worktree.
-4. Perform the approved rewrite non-interactively where practical. Do not broaden its scope without new approval.
-5. Compare the rewritten tree to the pre-rewrite prepared tree. Any difference must be intentional and explained.
-6. Re-run required and focused validation on the rewritten series or final tree as appropriate.
-7. Inspect the new commit sequence and aggregate diff once more for reviewer clarity.
+1. ブランチtipとworktreeが記録時の状態と一致することを再確認する。変更されている場合は承認を無効とし、修正した計画を提示する。
+2. `codex/backup-<branch>-<timestamp>`のように、元のローカルtipを指す明確な名前のsafety refを作成し、正確な名前とcommitを報告する。
+3. リポジトリの方針に従って無関係な作業を保全する。cleanなworktreeを作るために破壊的cleanupを使用しない。
+4. 可能であれば、承認済みの書き換えを非対話的に実行する。新たな承認なしに範囲を広げない。
+5. 書き換え後のtreeと、書き換え前に準備したtreeを比較する。相違はすべて意図的で、説明可能でなければならない。
+6. 必要に応じて、書き換え後のコミット系列または最終treeに対し、必須かつ対象を絞った検証を再実行する。
+7. 新しいコミット系列と全体diffを、レビュアーにとって明瞭かという観点でもう一度確認する。
 
-If the branch is published, obtain explicit approval to update it unless that exact force-push was already included in the approved plan. Use only `--force-with-lease`, preferably pinned to the previously recorded remote object ID. Never use an unconditional force push. If the lease fails, fetch, reassess the remote changes, and ask for direction rather than overriding them.
+ブランチが公開済みの場合は、そのforce-pushが承認済み計画に明記されていない限り、更新前に明示的な承認を得る。`--force-with-lease`だけを使用し、できれば事前に記録したリモートobject IDに固定する。無条件のforce-pushは使用しない。leaseが失敗した場合はfetchし、リモートの変更を再評価して、上書きせずにユーザーへ方針を確認する。
 
-## Hand off
+## 引き渡す
 
-Report:
+次を報告する。
 
-- the final branch and PR base;
-- the resulting logical commit list;
-- material cleanup across code, tests, comments, and documentation;
-- validation commands and outcomes;
-- any unverified behavior or environment-dependent failure;
-- the safety ref and rewritten remote branch, if applicable;
-- remaining reviewer risks or deliberate tradeoffs.
+- 最終的なブランチとPRのbase
+- 整理後の論理的なコミット一覧
+- コード、テスト、コメント、文書に対する重要なcleanup
+- 検証コマンドと結果
+- 未検証の挙動または環境依存の失敗
+- 該当する場合はsafety refと書き換えたリモートブランチ
+- 残るレビュー上のリスクまたは意図的なtradeoff
 
-Do not request review or claim readiness while required checks are failing or known inconsistencies remain.
+必須checkが失敗している、または既知の不整合が残っている状態で、レビューを依頼したり準備完了と報告したりしない。

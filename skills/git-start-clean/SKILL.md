@@ -1,70 +1,71 @@
 ---
 name: git-start-clean
-description: Safely prepare a Git repository for new work by preserving local changes, switching to the remote default branch, and fast-forwarding it to the latest remote state. Use before starting a new task when the current branch or worktree may contain staged, unstaged, untracked, generated, or unfinished files.
+description: ローカルの変更を保全し、リモートのデフォルトブランチへ切り替え、その最新状態までfast-forwardすることで、Gitリポジトリを新しい作業に向けて安全に準備する。現在のブランチやworktreeにstaged、unstaged、untracked、生成済み、または未完了のファイルが存在する可能性がある状態で、新しいタスクを開始する前に使用する。
+license: CC0-1.0
 ---
 
-# Git Start Clean
+# Gitリポジトリをcleanな状態から開始する
 
-Leave the repository on an up-to-date default branch with a clean worktree. Preserve anything that might be valuable, explain every destructive candidate, and never silently discard local work.
+リポジトリを最新のデフォルトブランチかつcleanなworktreeの状態にする。価値がある可能性のあるものはすべて保全し、破壊的操作の候補を一つずつ説明し、ローカル作業を暗黙に破棄しない。
 
-## Workflow
+## 手順
 
-1. Confirm the current directory is inside the intended Git repository. Read repository instructions before changing anything.
-2. Inspect the repository before fetching or switching branches:
-   - Record the current branch or detached `HEAD`.
-   - Inspect `git status --short --branch` and, when needed, `git status --porcelain=v2`.
-   - Distinguish staged changes, unstaged tracked changes, untracked files, conflicts, and submodule changes.
-   - Check whether the current branch has commits not present on its upstream. Do not treat committed work as disposable.
-3. Determine the remote and default branch from repository metadata. Prefer the tracked remote's symbolic `HEAD`, then hosting metadata such as `gh repo view --json defaultBranchRef`; ask the user if the result is absent or conflicting. Do not assume `origin/main`.
-4. Fetch the selected remote with pruning. If authentication, network access, or remote configuration prevents a reliable fetch, report the problem and stop rather than claiming the checkout is current.
-5. Resolve every local change using the classification rules below. Re-run status after each action.
-6. Switch to the local default branch. If it does not exist, create it to track the verified remote default branch. Never force the switch.
-7. Update the default branch from its verified remote counterpart using fast-forward-only behavior, such as `git pull --ff-only`. If the branch has diverged, contains local commits, or lacks a trustworthy upstream, stop and ask the user how to proceed. Do not reset or rebase it automatically.
-8. Verify and report the final branch, upstream relationship, fetched remote/default branch, and worktree status. A successful result must be both current with the fetched remote and clean.
+1. 現在のディレクトリが意図したGitリポジトリ内であることを確認する。変更する前にリポジトリの指示を読む。
+2. fetchやブランチ切り替えの前にリポジトリを確認する。
+   - 現在のブランチまたはdetached `HEAD`を記録する。
+   - `git status --short --branch`を確認し、必要に応じて`git status --porcelain=v2`も確認する。
+   - stagedの変更、trackedファイルのunstagedな変更、untrackedファイル、競合、submoduleの変更を区別する。
+   - 現在のブランチにupstreamにないコミットがあるか確認する。コミット済みの作業を破棄可能とみなさない。
+3. リポジトリのメタデータからリモートとデフォルトブランチを特定する。追跡対象リモートのsymbolic `HEAD`を優先し、次に`gh repo view --json defaultBranchRef`などのhostingメタデータを使用する。結果が得られないか矛盾する場合はユーザーに確認する。`origin/main`だと決めつけない。
+4. 選択したリモートをprune付きでfetchする。認証、ネットワークアクセス、リモート設定の問題により信頼できるfetchができない場合は、checkoutが最新だと主張せず、問題を報告して停止する。
+5. 以下の分類規則に従い、ローカルの変更をすべて処理する。操作のたびにstatusを再確認する。
+6. ローカルのデフォルトブランチへ切り替える。存在しない場合は、確認済みのリモートデフォルトブランチを追跡するよう作成する。強制的に切り替えない。
+7. `git pull --ff-only`などfast-forwardのみの方法で、確認済みのリモートブランチからデフォルトブランチを更新する。ブランチが分岐している、ローカルコミットを含む、または信頼できるupstreamがない場合は停止し、進め方をユーザーに確認する。自動でresetやrebaseをしない。
+8. 最終的なブランチ、upstreamとの関係、fetchしたリモートとデフォルトブランチ、worktreeの状態を確認して報告する。成功とみなすには、fetchしたリモートの最新状態と一致し、かつcleanでなければならない。
 
-## Classify local changes
+## ローカルの変更を分類する
 
-Treat staged changes and modified or deleted tracked files as valuable work by default. Preserve them together so that index state is not accidentally lost.
+stagedの変更、および変更または削除されたtrackedファイルは、既定で価値のある作業として扱う。indexの状態を誤って失わないよう、まとめて保全する。
 
-Treat an untracked file as disposable only when repository evidence shows that it is reproducible generated output or a known temporary artifact. Suitable evidence includes a documented build output path, an ignore rule, or a deterministic command that recreates it. Similar naming, an unfamiliar extension, or the agent's intuition is not sufficient.
+untrackedファイルを破棄可能とみなすのは、再現可能な生成物または既知の一時ファイルであることをリポジトリ内の証拠が示している場合に限る。適切な証拠には、文書化されたbuild出力先、ignore規則、またはファイルを再生成する決定的なコマンドがある。似た名前、見慣れない拡張子、エージェントの直感だけでは不十分である。
 
-Treat the following as valuable or uncertain and stash them instead of deleting them:
+次のものは価値があるか不確実なものとして扱い、削除せずstashする。
 
-- source, tests, documentation, configuration, credentials, reports, data, or user-authored notes;
-- files whose origin or reproducibility is unclear;
-- generated files containing possible manual edits;
-- changes spanning both generated and authored files when separating them could lose context.
+- ソース、テスト、文書、設定、認証情報、レポート、データ、またはユーザーが記したメモ
+- 出自や再現可能性が不明なファイル
+- 手作業による編集を含む可能性がある生成ファイル
+- 生成ファイルと作成済みファイルの両方にまたがり、分離すると文脈を失う可能性がある変更
 
-Ask the user before acting when classification is ambiguous, a merge or rebase is in progress, conflicts exist, nested repositories or submodules are dirty, multiple stashes would obscure related work, or cleanup would require changing repository state beyond this workflow.
+分類が曖昧な場合、mergeまたはrebaseの途中である場合、競合がある場合、入れ子のリポジトリやsubmoduleがdirtyな場合、複数のstashによって関連作業が分かりにくくなる場合、またはこの手順を超えるリポジトリ状態の変更が必要な場合は、操作前にユーザーへ確認する。
 
-## Preserve work
+## 作業を保全する
 
-Use a descriptive stash that includes untracked files, for example `git stash push -u -m "pre-task cleanup: <context>"`. Do not include ignored files unless they were inspected and the user explicitly wants them preserved. After stashing:
+たとえば`git stash push -u -m "pre-task cleanup: <context>"`のように、untrackedファイルを含め、内容が分かるメッセージを付けてstashする。ignoredファイルは、確認済みであり、ユーザーが保全を明示的に望む場合を除いて含めない。stash後は次を行う。
 
-- verify that the stash was created and record its reference and message;
-- verify that the intended paths left the worktree;
-- report how to restore the work, without applying or dropping the stash;
-- do not split related staged and unstaged work merely to make cleanup easier.
+- stashが作成されたことを確認し、その参照とメッセージを記録する。
+- 対象のpathがworktreeからなくなったことを確認する。
+- stashをapplyまたはdropせず、作業を復元する方法を報告する。
+- cleanupを容易にするためだけに、関連するstagedとunstagedの作業を分割しない。
 
-If stashing fails or leaves changes behind, stop and preserve the remaining state for user inspection.
+stashに失敗した場合や変更が残った場合は停止し、残った状態をユーザーが確認できるよう保全する。
 
-## Delete disposable artifacts
+## 破棄可能な生成物を削除する
 
-Deletion is destructive. Before deleting anything:
+削除は破壊的操作である。削除前に次を行う。
 
-1. Show the exact candidate paths and the repository evidence that each is generated and reproducible.
-2. Use a dry-run or preview when available.
-3. Obtain explicit user confirmation for the exact deletion set.
-4. Delete only those exact paths; never use a broad unresolved glob, repository-wide `git clean`, or recursive deletion rooted at the workspace.
-5. Re-run status and report what was removed and whether it can be regenerated.
+1. 候補となる正確なpathと、それぞれが生成可能かつ再現可能であることを示すリポジトリ内の証拠を提示する。
+2. 利用できる場合はdry-runまたはpreviewを使用する。
+3. 正確な削除対象について、ユーザーから明示的な確認を得る。
+4. 確認された正確なpathだけを削除する。解決されていない広範なglob、リポジトリ全体への`git clean`、workspaceを起点とする再帰削除を使用しない。
+5. statusを再確認し、削除したものと再生成可能かを報告する。
 
-Never delete tracked changes, ignored files, credentials, user data, or uncertain artifacts. Never use `git reset --hard`, forced checkout/switch, or equivalent commands to make the tree clean.
+trackedファイルの変更、ignoredファイル、認証情報、ユーザーデータ、不確実な生成物を削除しない。worktreeをcleanにするために`git reset --hard`、強制的なcheckoutやswitch、または同等のコマンドを使用しない。
 
-## Completion criteria
+## 完了条件
 
-Do not call the repository ready unless all of the following are true:
+次のすべてを満たすまで、リポジトリの準備が完了したと報告しない。
 
-- the checked-out branch is the verified default branch;
-- it matches the freshly fetched remote default branch;
-- no staged, unstaged, untracked, conflicted, or dirty submodule state remains;
-- every original local change was either explicitly deleted with approval, preserved in a verified stash, or otherwise accounted for to the user.
+- checkout中のブランチが確認済みのデフォルトブランチである。
+- 直前にfetchしたリモートのデフォルトブランチと一致している。
+- staged、unstaged、untracked、競合、dirtyなsubmoduleの状態が残っていない。
+- 元のローカル変更がすべて、明示承認のうえで削除されたか、確認済みのstashに保全されたか、別の方法でユーザーに説明されている。
