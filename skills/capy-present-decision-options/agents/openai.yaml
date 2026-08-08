@@ -1,0 +1,4 @@
+interface:
+  display_name: "判断事項と選択肢を提示"
+  short_description: "ユーザーが判断すべき論点を整理して推奨選択肢を提示する"
+  default_prompt: "$capy-present-decision-options を使い、現在の作業を進めるために私が判断すべき事項と推奨選択肢を提示してください。"

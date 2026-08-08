@@ -1,9 +1,10 @@
 # Repository guidelines
 
 - Store publishable Agent Skills under `skills/<skill-name>/`.
-- Prefix every skill name with `capy-`.
+- Prefix every machine-readable skill identifier with `capy-`; this applies to the directory name and the `name` in `SKILL.md`.
 - Keep the directory name identical to the `name` in `SKILL.md`.
 - Use only lowercase letters, digits, and hyphens in skill names.
+- Set `agents/openai.yaml` `display_name` to a concise Japanese UI name without the `capy` prefix.
 - Keep YAML frontmatter limited to `name`, `description`, and `license`.
 - Add resource directories only when the skill needs them.
 - Run `gh skill publish --dry-run` after changing a skill.
