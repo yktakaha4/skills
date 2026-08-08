@@ -20,6 +20,8 @@ skills/
 | Skill | 用途 |
 | --- | --- |
 | `capy-git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
+| `capy-implement-change-and-review` | 関連する3つのGit Skillを使い、指示された変更の実装から敵対的レビューまで進める |
+| `capy-explain-unfamiliar-technology` | 未知の技術を分離したサブエージェントで解説し、類似技術と比較する |
 | `capy-gh-review-pr-adversarially` | 独立した複数の観点からPRを敵対的に検証し、確認できた問題だけを報告する |
 | `capy-gh-prepare-pr-for-review` | ブランチ全体を整理し、明示承認を得てレビューしやすいコミット履歴へ再構成する |
 | `capy-gh-merge-pr-safely` | base追従、CI確認、マージ、マージ後CIの監視と復旧判断を慎重に行う |
