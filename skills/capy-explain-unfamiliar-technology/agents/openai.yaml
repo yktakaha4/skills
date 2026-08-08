@@ -1,0 +1,4 @@
+interface:
+  display_name: "未知の技術を学ぶ"
+  short_description: "未知の技術を分離したサブエージェントで調査し比較解説する"
+  default_prompt: "$capy-explain-unfamiliar-technology を使い、この会話に出てきた未知の技術を別のサブエージェントで解説してください。"
