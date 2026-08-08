@@ -49,7 +49,7 @@ gh skill install . capy-git-start-clean --from-local --agent codex --scope proje
 
 ## 全Skillをユーザースコープへ同期する
 
-現在のチェックアウトにある全Skillを、検出したコーディングエージェントのユーザースコープへインストールまたは更新します。
+`main`を`origin/main`へfast-forwardしてから、全Skillを検出したコーディングエージェントのユーザースコープへインストールまたは更新します。別のブランチやdetached HEADでは実行できません。
 
 ```sh
 make sync
