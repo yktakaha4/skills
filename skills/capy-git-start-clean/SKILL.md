@@ -1,5 +1,5 @@
 ---
-name: git-start-clean
+name: capy-git-start-clean
 description: ローカルの変更を保全し、リモートのデフォルトブランチへ切り替え、その最新状態までfast-forwardすることで、Gitリポジトリを新しい作業に向けて安全に準備する。現在のブランチやworktreeにstaged、unstaged、untracked、生成済み、または未完了のファイルが存在する可能性がある状態で、新しいタスクを開始する前に使用する。
 license: CC0-1.0
 ---

@@ -1,4 +1,0 @@
-interface:
-  display_name: "PRを敵対的にレビュー"
-  short_description: "独立した根拠ベースのレビューでPRをstress testする"
-  default_prompt: "$gh-review-pr-adversarially を使い、現在のPull Requestをstress testして、確認できた指摘だけを報告してください。"

@@ -1,6 +1,7 @@
 # Repository guidelines
 
 - Store publishable Agent Skills under `skills/<skill-name>/`.
+- Prefix every skill name with `capy-`.
 - Keep the directory name identical to the `name` in `SKILL.md`.
 - Use only lowercase letters, digits, and hyphens in skill names.
 - Keep YAML frontmatter limited to `name`, `description`, and `license`.
