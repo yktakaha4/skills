@@ -1,4 +1,4 @@
 interface:
   display_name: "変更を実装してレビュー"
-  short_description: "安全に作業を開始し、実装からPRレビューまで進める"
-  default_prompt: "$capy-implement-change-and-review を使い、指示した変更を実装してPRレビューまで完了してください。"
+  short_description: "Draft PRで進捗を共有し、実装からレビューまで進める"
+  default_prompt: "$capy-implement-change-and-review を使い、Draft PRで進捗を共有しながら変更の実装とレビューを完了してください。"
