@@ -19,7 +19,7 @@ license: CC0-1.0
 3. `capy-git-start-clean`を使用する。ローカル作業、既定ブランチ、fetch、fast-forward、cleanなworktreeに関する判定を同Skillへ委ねる。
 4. 同Skillがユーザー判断を要求した場合は、作業を開始せず、その判断を得てから再開する。
 5. リポジトリの規則に従い、必要ならfeature branchを作成する。
-6. GitHub remote、認証、Pull Requestのbase branchを確認する。Draft Pull Requestを作成できない環境でもローカル実装は継続できるが、GitHubから進捗確認できないことを直ちに報告する。
+6. GitHub remote、認証、Pull Requestのbase branchを確認する。Draft Pull Requestを作成できない場合は、GitHubから進捗確認できないことを直ちに報告して中断し、ユーザーがローカルでの継続を明示した場合だけ再開する。
 
 ## 2. 指示された変更を実装する
 
@@ -34,7 +34,7 @@ license: CC0-1.0
 ## 3. Draft Pull Requestで進捗を公開する
 
 1. 最初の意味ある最小差分を実装して関連する検証を行ったら、checkpoint commitを作成してfeature branchをpushする。Pull Request作成だけを目的とする空commitは作らない。
-2. base branchとの差分、commit、検証結果を確認し、Draft Pull Requestをできるだけ早く作成する。タイトルと本文に作業目的、現状、実行済みの検証、残作業を記載する。
+2. base branchとの差分、commit、検証結果を確認し、Draft Pull Requestをできるだけ早く作成する。タイトルと本文に作業目的、現状、実行済みの検証、残作業を記載し、作成直後にURLと現在のcheckpointをユーザーへ共有する。
 3. 以降は、ひとまとまりの挙動、テスト、または修正が完了した節目でcheckpoint commitを作成し、関連する検証後に速やかにpushする。保存のたびの細切れcommitや、未確認の壊れた状態のpushは避ける。
 4. 作業段階または残作業が実質的に変わったら、Pull Request本文の進捗と検証状況を更新する。GitHub上のheadと説明がローカルの進捗を正しく表す状態を保つ。
 5. push後に利用可能なCIを確認する。失敗や未完了のcheckを成功扱いせず、原因調査中であることをPull Requestの進捗へ反映する。
