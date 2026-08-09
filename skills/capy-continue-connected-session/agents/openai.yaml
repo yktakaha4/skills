@@ -1,0 +1,4 @@
+interface:
+  display_name: "接続セッションから作業を継続"
+  short_description: "接続中のターミナルやブラウザを確認して作業を継続する"
+  default_prompt: "$capy-continue-connected-session を使い、接続中のターミナルやブラウザを確認して、これまでの会話から期待される作業を続けてください。"

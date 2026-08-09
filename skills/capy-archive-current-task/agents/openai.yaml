@@ -1,0 +1,6 @@
+interface:
+  display_name: "現在のタスクをアーカイブ"
+  short_description: "生成AIツールの標準機能で現在のタスクをアーカイブする"
+  default_prompt: "$capy-archive-current-task を使い、現在のタスクをアーカイブしてください。"
+policy:
+  allow_implicit_invocation: false
