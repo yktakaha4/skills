@@ -1,0 +1,4 @@
+interface:
+  display_name: "記述を実装に合わせて整理する"
+  short_description: "READMEや文書、コメントを実装に基づいて正確かつ簡潔に整える"
+  default_prompt: "$capy-clean-up-documentation を使い、READMEや文書、コードコメントを実装に基づいて整理してください。"
