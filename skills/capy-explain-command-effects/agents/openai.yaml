@@ -1,0 +1,4 @@
+interface:
+  display_name: "コマンドの作用を確認"
+  short_description: "コマンドと参照スクリプトの作用・副作用・危険性を調べる"
+  default_prompt: "$capy-explain-command-effects を使い、このコマンドを実行した場合の作用・副作用・セキュリティリスクを説明してください。"
