@@ -1,4 +1,0 @@
-interface:
-  display_name: "接続セッションをトラブルシュート"
-  short_description: "接続中のターミナルやブラウザからエラーを診断して解消する"
-  default_prompt: "$capy-troubleshoot-connected-session を使い、接続中のターミナルやブラウザのエラーを診断して解消してください。"
