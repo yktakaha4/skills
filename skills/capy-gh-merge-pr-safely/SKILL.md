@@ -1,6 +1,6 @@
 ---
 name: capy-gh-merge-pr-safely
-description: デフォルトブランチ上の変更から必要に応じてPull Requestを作成し、baseブランチの最新状態へ安全に追従させ、マージ前のCI失敗を診断・修正し、必須ゲートをすべて確認したうえで、レビュー済みの正確なheadをマージし、ローカルを更新済みのデフォルトブランチへ戻してから、マージ後のCIを監視する。GitHubのPull Requestを慎重にマージする、CI成功後だけマージする、デフォルトブランチ上の未コミット変更をPRにしてマージする、マージ前後の失敗を調査する、不適切なマージ後に修正PRまたはrevert PRを準備するよう依頼された場合に使用する。
+description: デフォルトブランチ上の変更から必要に応じてPull Requestを作成し、baseブランチの最新状態へ安全に追従させ、マージ前のCI失敗を診断・修正し、必須ゲートをすべて確認したうえで、レビュー済みの正確なheadをマージし、マージ後のCIを監視して、通常のcheckout、Codex-managed worktree、permanentまたは手動worktreeに応じて作業環境を安全に整理する。GitHubのPull Requestを慎重にマージする、CI成功後だけマージする、デフォルトブランチ上の未コミット変更をPRにしてマージする、マージ前後の失敗を調査する、不適切なマージ後に修正PRまたはrevert PRを準備するよう依頼された場合に使用する。
 license: CC0-1.0
 ---
 
@@ -9,6 +9,14 @@ license: CC0-1.0
 マージを、ゲートを通過させる変更と、その後の本番運用相当の検証として扱う。速さのために安全性を犠牲にしない。
 
 ユーザーに選択または承認を求める場合は、環境が提供する構造化された選択・承認UIを使用する。適切なUIがない場合だけ、テキストで選択肢や回答方法を提示する。
+
+## GitHub操作の手段を選ぶ
+
+GitHub上のrepository、Pull Request、issue、review、check、workflow run、マージ状態を読み書きする場合は、環境が標準で提供するGitHub App、connector、MCP、専用API toolなどの構造化されたGitHub機能を最初に使用する。使い慣れている、またはshellで一括実行しやすいという理由だけで`gh`を優先しない。
+
+操作前に利用可能な標準機能と、その機能が必要な取得項目、書き込み、待機、head SHA照合を満たせるか確認する。標準機能が利用できない、必要な情報や操作を提供しない、認証・権限上使用できない、または検証済みhead SHAとの照合など本スキルの安全条件を保証できない場合だけ、該当部分に限定して`gh`をフォールバックとして使用する。フォールバックする場合は、標準機能では満たせなかった条件を簡潔に明記する。
+
+標準機能で対応できる部分まで`gh`へ置き換えず、必要なら標準機能と限定的な`gh`フォールバックを組み合わせる。GitHub上の操作ではないlocal repositoryのstatus、diff、branch、worktree、fetch、pullなどには通常の`git`を使用する。
 
 ## 対象を確定する
 
@@ -48,18 +56,16 @@ license: CC0-1.0
 1. マージ直前にPRのメタデータを再取得する。
 2. 検証後にhead SHAが変わっていた場合は停止し、影響するすべてのゲートを再確認する。
 3. リポジトリで許可されているマージ方式を選ぶ。ユーザー指定やリポジトリ方針がない場合はmerge commit方式を既定とする。squashまたはrebaseは、ユーザー指定またはリポジトリ方針がある場合だけ使用する。
-4. `gh pr merge --match-head-commit <verified-sha>`のようにhead SHAを照合してマージし、未レビューの更新が競合して先にマージされることを防ぐ。
+4. 環境標準のGitHub機能が検証済みhead SHAを拘束してマージできる場合は、その機能を使用する。保証できない場合は、理由を明記して`gh pr merge --match-head-commit <verified-sha>`をフォールバックとして使用し、未レビューの更新が競合して先にマージされることを防ぐ。
 5. GitHub上でPRの状態が`MERGED`であることを確認し、merge commit SHAを記録する。コマンドの終了コードだけから成功を推測しない。
 
-## デフォルトブランチへ戻る
-
-マージを確認した直後、マージ後CIの監視を始める前に実施する。
+## マージ後のbaseを確認する
 
 1. リポジトリまたはhostingのメタデータから、remoteとデフォルトブランチを特定する。`origin/main`やPRのbaseブランチをデフォルトブランチだと仮定しない。
-2. worktreeを再確認し、無関係なローカル作業を保全する。安全なブランチ切り替えを妨げる場合は停止し、その理由を報告する。
-3. ローカルのデフォルトブランチへ切り替える。存在しない場合は、確認済みのremoteのデフォルトブランチを追跡するよう作成する。強制的に切り替えない。
-4. `git pull --ff-only`のように、確認済みのupstreamからfast-forwardのみでpullする。ブランチが分岐している、未pushのコミットがある、または信頼できるupstreamがない場合は、resetやrebaseを自動実行せず停止してユーザーに確認する。
-5. 続行前に、現在のブランチ、upstreamとの関係、worktreeの状態を確認する。
+2. remoteをfetchし、GitHubで確認したmerge commit SHAがremoteのデフォルトブランチから到達可能であることを確認する。現在のworktreeでデフォルトブランチをcheckoutすることを、この確認の前提にしない。
+3. `git worktree list --porcelain`と利用可能なアプリのメタデータを使い、現在地が通常のlocal checkout、Codex-managed worktree、permanent worktree、または手動作成されたlinked worktreeのどれかを特定する。pathだけでmanagedかどうかを断定しない。
+4. 各worktreeが所有するbranchを確認する。同じbranchを複数のworktreeでcheckoutしようとせず、`--force`でGitの保護を回避しない。
+5. マージ後CIの調査や修正が必要になる可能性に備え、この時点では現在の作業環境を削除またはarchiveしない。
 
 ## マージ後を監視する
 
@@ -71,9 +77,22 @@ license: CC0-1.0
 6. 修正PRやrevert PRを自動的にマージしない。URL、根拠、リスク、CI状態を提示し、別の判断としてユーザーに委ねる。
 7. 環境依存、運用上、または不確実な失敗については、証拠を保全し、推定される責任境界を説明して、進め方をユーザーに確認する。
 
+## 作業環境を整理する
+
+関連するマージ後CIがすべて成功し、修正PRや追加調査が不要な場合だけ実施する。
+
+1. 現在のworktreeについて、staged、unstaged、untracked、未pushのcommitを再確認する。今回の作業またはユーザーの作業がremoteや別の安全な保存先に残っていない場合は、切り替え、削除、archiveを行わず停止する。worktree削除前のsnapshotだけを唯一の保存手段にしない。
+2. 通常のlocal checkoutで作業している場合は、デフォルトブランチが別のworktreeで使用されていないことを確認してから切り替え、確認済みのupstreamからfast-forwardのみでpullする。ブランチが分岐している、未pushのcommitがある、または信頼できるupstreamがない場合は、resetやrebaseを自動実行せず停止してユーザーに確認する。
+3. Codex-managed worktreeで作業している場合は、そのworktreeをデフォルトブランチへ切り替えない。デフォルトブランチを所有するlocal checkoutが存在し、cleanで安全に更新できる場合は、そのcheckoutを確認済みのupstreamへfast-forwardする。変更中、権限不足、または利用中で安全性を確認できない場合は触れず、local checkoutが未更新であることを報告する。
+4. Codex-managed worktreeからlocal checkoutで作業を続ける必要がある場合は、同じbranchを両方でcheckoutせず、利用可能なHandoff機能を使用する。この場合はタスクをarchiveしない。
+5. Codex-managed worktreeで作業を続ける必要がなく、変更がすべて保存され、マージ後CIも成功している場合は、最終報告に必要な情報を確定してから、利用可能なタスクのarchive機能でタスクをarchiveする。アプリの管理対象worktreeをrawなdirectory削除や`git worktree remove --force`で閉じない。archive機能が利用できない場合は、ユーザーがタスクをarchiveできることを案内する。
+6. permanent worktreeまたは手動作成されたlinked worktreeは自動的にarchiveまたは削除しない。不要になった場合でも、cleanで保存済みであることを確認し、ユーザーが削除を明示的に依頼したときだけ、別のworktreeから`git worktree remove <path>`を使用する。`--force`を既定にしない。
+7. 整理後に、デフォルトブランチを所有するcheckoutとそのupstreamとの関係、残したworktree、削除またはarchiveした対象を確認する。
+
 ## 正確に報告する
 
 - 確認済みの事実、診断上の推論、未検証の仮定を分ける。
 - PRと関連するCI runへのリンクを示す。
 - PRがマージされたか、マージ後CIが完了したか、後続対応が残っているかを明記する。
+- 通常checkoutへ戻した、managed worktreeをarchiveした、Handoffした、またはworktreeを残した、のどれを行ったか明記する。デフォルトブランチを所有するlocal checkoutを更新できなかった場合は、その理由も示す。
 - 最後の関連runが完了するまで、CIが成功したと報告しない。
