@@ -19,6 +19,7 @@ skills/
 
 | Skill | 用途 |
 | --- | --- |
+| `capy-update-skills` | このリポジトリ由来のインストール済みスキルを更新し、必要な新規スキルを取得する |
 | `capy-collaborate-step-by-step` | 必要な時点で手動操作を依頼し、結果を検証してから自律作業を再開する |
 | `capy-git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
 | `capy-implement-change-and-review` | 関連する3つのGit Skillを使い、指示された変更の実装から敵対的レビューまで進める |

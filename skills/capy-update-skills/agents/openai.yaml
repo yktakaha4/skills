@@ -1,0 +1,4 @@
+interface:
+  display_name: "スキルを更新"
+  short_description: "このリポジトリのスキルをGitHubから取得して既存のインストール先を更新する"
+  default_prompt: "$capy-update-skills を使い、yktakaha4/skillsのスキルを更新し、新しく追加されたスキルも取得してください。"
