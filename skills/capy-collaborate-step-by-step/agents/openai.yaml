@@ -1,0 +1,4 @@
+interface:
+  display_name: "手動操作を挟んで進める"
+  short_description: "必要な時点で具体的な手動操作を依頼し、結果を検証して自律作業を再開する"
+  default_prompt: "$capy-collaborate-step-by-step を使い、自律的に作業を進め、手動操作が必要な時点で理由と実行内容を提示し、私の実行後に結果を検証して続きを進めてください。"
