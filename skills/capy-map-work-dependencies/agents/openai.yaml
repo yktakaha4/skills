@@ -1,0 +1,4 @@
+interface:
+  display_name: "作業の依存関係を整理"
+  short_description: "直近の会話から未完了作業を調べ、着手順序と並行できる作業を図表で整理する"
+  default_prompt: "$capy-map-work-dependencies を使い、直近の会話から未完了作業の依存関係を調べ、進める順序と並行できる作業を図表で整理してください。"
