@@ -21,6 +21,7 @@ skills/
 | --- | --- |
 | `capy-update-skills` | このリポジトリ由来のインストール済みスキルを更新し、必要な新規スキルを取得する |
 | `capy-collaborate-step-by-step` | 必要な時点で手動操作を依頼し、結果を検証してから自律作業を再開する |
+| `capy-map-work-dependencies` | 直近の会話から未完了作業の依存関係を調べ、着手順序と並行できる作業を固定形式の図表で整理する |
 | `capy-git-start-clean` | ローカル作業を保全しながら、作業開始前のGitリポジトリを最新かつcleanな状態にする |
 | `capy-implement-change-and-review` | 関連する3つのGit Skillを使い、指示された変更の実装から敵対的レビューまで進める |
 | `capy-explain-unfamiliar-technology` | 未知の技術を分離したサブエージェントで解説し、類似技術と比較する |
